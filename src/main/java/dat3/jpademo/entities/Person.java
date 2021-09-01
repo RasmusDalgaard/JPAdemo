@@ -1,4 +1,3 @@
-
 package dat3.jpademo.entities;
 
 import java.io.Serializable;
@@ -9,9 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-
 
 @Entity
 public class Person implements Serializable {
@@ -22,35 +21,58 @@ public class Person implements Serializable {
     private Long id;
     private String name;
     private int year;
-    
+
     @OneToOne(cascade = CascadeType.PERSIST)
     private Address address;
-    
+
     @OneToMany(mappedBy = "person", cascade = CascadeType.PERSIST)
     private List<Fee> fees;
+
+    @ManyToMany(mappedBy = "persons", cascade = CascadeType.PERSIST)
+    List<SwimStyle> swimStyles;
 
     public Person(String name, int year) {
         this.name = name;
         this.year = year;
         this.fees = new ArrayList<>();
+        this.swimStyles = new ArrayList<>();
     }
-    
-    public Person(){}
-    
+
+    public Person() {
+    }
+
     public void addFee(Fee fee) {
-        this.fees.add(fee);
         if (fee != null) {
+            this.fees.add(fee);
             fee.setPerson(this);
         }
     }
 
     public void setAddress(Address address) {
-        this.address = address;
         if (address != null) {
+            this.address = address;
             address.setPerson(this);
         }
     }
+
+    public List<SwimStyle> getSwimStyles() {
+        return swimStyles;
+    }
+
+    public void addSwimStyle(SwimStyle swimStyle) {
+        if (swimStyle != null) {
+            this.swimStyles.add(swimStyle);
+            swimStyle.getPersons().add(this);
+        }
+    }
     
+    public void removeSwimStyle(SwimStyle swimStyle) {
+        if (swimStyle != null) {
+            this.swimStyles.remove(swimStyle);
+            swimStyle.getPersons().remove(this);
+        }
+    }
+
     public Address getAddress() {
         return address;
     }
@@ -58,7 +80,7 @@ public class Person implements Serializable {
     public List<Fee> getFees() {
         return fees;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -69,16 +91,14 @@ public class Person implements Serializable {
 
     public int getYear() {
         return year;
-    }  
-   
+    }
+
     public void setYear(int year) {
         this.year = year;
     }
-    
+
     public Long getId() {
         return id;
     }
 
-
-    
 }
