@@ -26,6 +26,7 @@ public class Address implements Serializable {
     private String street;
     private int zip;
     private String city;
+    
     @OneToOne(mappedBy = "address")
     private Person person;
     
